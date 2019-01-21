@@ -1,0 +1,70 @@
+{extend name="public/base" /}
+{block name="main"}
+<!-- 内容区域 -->
+<div class="col-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <form class="forms-sample" action="{:url('Article/saveFl')}" method="post"  enctype="multipart/form-data" >
+                <input type="hidden" name="id" value="{$result.id}">
+                <input type="hidden" name="ico_id" id="ico_id" value="{$result.ico_id}">
+                <div class="form-group">
+                    <label for="superior_id">上级分类</label>
+                    <select class="form-control" id="superior_id" name="superior_id">
+                        <option value="0">顶级分类</option>
+                        {volist name="flList" id="vo"}
+                          <option value="{$vo.id}" {if condition="$result.superior_id eq $vo.id"}selected{/if}>{$vo.name}</option>
+                        {/volist}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="name">分类名称</label>
+                    <input type="text" class="form-control" id="name" name="name" value="{$result.name}" placeholder="请输入分类名称">
+                </div>
+                <div class="form-group">
+                    <label for="desc">分类描述</label>
+                    <input type="text" class="form-control" id="desc" name="desc" value="{$result.desc}" placeholder="请输入分类描述">
+                </div>
+                <div class="form-group">
+                    <label>分类图标</label>
+                    <input type="file" name="img" id="img" onchange="fileU('img')" class="file-upload-default">
+                    <div class="input-group col-xs-12">
+                        <input type="text" class="form-control file-upload-info" accept="image/*" disabled placeholder="上传分类图标">
+                        <span class="input-group-append">
+                          <button class="file-upload-browse btn btn-gradient-primary" type="button">上传分类图标</button>
+                        </span>
+                    </div>
+                </div>
+
+
+                <button type="submit" class="btn btn-gradient-primary mr-2">提交</button>
+
+            </form>
+        </div>
+    </div>
+</div>
+{/block}
+{block name="footer"}
+{__block__}
+<!-- Custom js for this page-->
+<script src="__ROOT__/admin_mb/js/file-upload.js"></script>
+<script>
+    function fileU(e) {
+        let reads = new FileReader();
+        let file = document.getElementById(e).files[0];
+        reads.readAsDataURL(file);
+        reads.onload = function(e) {
+            let base64Img = e.target.result;
+            //在这里提交ajax 到服务器
+            ajaxUpdateFile({'resource':base64Img,'name':'分类图标资源'},function (data) {
+                if(data.code == 200){
+                    $('#ico_id').val(data.data.id);
+                }else{
+                    alert(data.msg);
+                }
+            });
+
+        }
+    }
+
+</script>
+{/block}

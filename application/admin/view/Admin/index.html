@@ -1,0 +1,157 @@
+{extend name="public/base" /}
+{block name="main"}
+<div class="col-12 grid-margin">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">新增配置属性</h4>
+            <form class="form-sample" id="form-data-a">
+                <p class="card-description">您可以选择新增博客配置属性，当然我也可以选择是否使用！</p>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">属性name</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" name="name" placeholder="请输入属性名称"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">属性type</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" name="type" placeholder="请输入属性类型"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">属性value</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" name="value" placeholder="请输入属性默认值"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">属性hint</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" name="hint" placeholder="请输入属性提示语"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <button type="button" class="btn btn-primary btn-fw" id="toSubmit">提交</button>
+                    </div>
+                </div>
+
+
+            </form>
+        </div>
+
+        <div class="card-body">
+            <h4 class="card-title">系统配置列表</h4>
+            <p class="card-description">
+                id name type value hint <code>谨慎修改</code>
+            </p>
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>
+                        ID
+                    </th>
+                    <th>
+                        名称
+                    </th>
+                    <th>
+                        类型
+                    </th>
+                    <th>
+                        值
+                    </th>
+                    <th>
+                        提示语
+                    </th>
+                    <th>
+                        操作
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                {volist name="result" id="vo"}
+                <tr id="del{$vo.id}">
+                    <td class="py-1">
+                        {$vo.id}
+                    </td>
+                    <td>
+                        <input type="text" id="name{$vo.id}" class="form-control mb-2 mr-sm-2" value="{$vo.name}" placeholder="name">
+                    </td>
+                    <td>
+                        <input type="text" id="type{$vo.id}" class="form-control mb-2 mr-sm-2" value="{$vo.type}" placeholder="type">
+                    </td>
+                    <td>
+                        <input type="text" id="value{$vo.id}" class="form-control mb-2 mr-sm-2" value="{$vo.value}" placeholder="value">
+                    </td>
+                    <td>
+                        <input type="text" id="hint{$vo.id}" class="form-control mb-2 mr-sm-2" value="{$vo.hint}" placeholder="hint">
+                    </td>
+                    <td>
+                        <button type="button" onclick="update('{$vo.id}')" class="btn btn-gradient-success btn-sm">修改</button>
+                        <button type="button" onclick="remove('{$vo.id}')" class="btn btn-gradient-danger btn-sm">删除</button>
+                    </td>
+                </tr>
+                {/volist}
+                </tbody>
+            </table>
+        </div>
+
+
+
+
+
+
+
+    </div>
+</div>
+
+{/block}
+
+{block name="footer"}
+{__block__}
+<script>
+    $(function () {
+        $('#toSubmit').click(function () {
+            let data = strToObj(decodeURIComponent($('#form-data-a').serialize(),true));
+            if(data.type == '' || data.name == '' || data.hint == ''){
+                alert("name,type,hint都是必填的哦");return false;
+            }
+            ajaxAddWebSite(data);
+            return false;
+        });
+
+    });
+    
+    function update(e) {
+        let data = {};
+        data.id = e;
+        data.name = $('#name'+e).val();
+        data.type = $('#type'+e).val();
+        data.value = $('#value'+e).val();
+        data.hint = $('#hint'+e).val();
+        ajaxUpdateWebSite(data);
+        return false;
+    }
+    function remove(e) {
+        if(confirm("您确定要删除吗?")){
+            let data = {};
+            data.id = e;
+            ajaxRemoveWebSite(data);
+            return false;
+        }
+
+    }
+</script>
+{/block}

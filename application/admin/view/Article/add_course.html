@@ -1,0 +1,95 @@
+{extend name="public/base" /}
+{block name="main"}
+<!-- 内容区域 -->
+<div class="col-12 grid-margin">
+    <div class="card">
+        <div class="card-body">
+            <form class="form-sample" id="addArticle" action="{:url('Article/saveCourse')}" method="post">
+                <input type="hidden" name="id" id="id" value="{$result.id}">
+                <input type="hidden" name="cover" id="cover" value="{$result.cover}">
+
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">教程标题</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="title" name="title" value="{$result.title}" placeholder="请输入教程标题">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">教程描述</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="intro" name="intro" value="{$result.intro}" placeholder="请输入教程描述">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">教程封面</label>
+                            <input type="file" name="img" id="img" onchange="fileU('img')" class="file-upload-default">
+                            <div class="col-sm-5">
+                                <input type="text" class="form-control file-upload-info" accept="image/*" disabled placeholder="上传封面">
+                            </div>
+                            <div class="col-sm-4">
+                                    <span class="input-group-append">
+                                 <button class="file-upload-browse btn btn-gradient-primary" type="button">上传封面</button>
+                                </span>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">是否立即发布</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" id="shelve" name="shelve">
+                                    <option value="1" {if condition="$result.shelve eq 1"}selected{/if}>是</option>
+                                    <option value="2" {if condition="$result.shelve eq 2"}selected{/if}>不是</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <button type="submit" class="btn btn-gradient-primary mr-2">提交保存</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+{/block}
+{block name="footer"}
+{__block__}
+<!-- Custom js for this page-->
+<script src="__ROOT__/admin_mb/js/file-upload.js"></script>
+<script>
+    function fileU(e) {
+        let reads = new FileReader();
+        let file = document.getElementById(e).files[0];
+        reads.readAsDataURL(file);
+        reads.onload = function(e) {
+            let base64Img = e.target.result;
+            //在这里提交ajax 到服务器
+            ajaxUpdateFile({'resource':base64Img,'name':'教程的封面'},function (data) {
+                if(data.code == 200){
+                    $('#cover').val(data.data.id);
+                }else{
+                    alert(data.msg);
+                }
+            });
+        }
+    }
+
+</script>
+{/block}

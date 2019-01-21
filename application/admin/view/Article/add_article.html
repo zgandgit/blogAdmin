@@ -1,0 +1,207 @@
+{extend name="public/base" /}
+{block name="head"}
+{__block__}
+<link rel="stylesheet" href="__ROOT__/markdown/examples/css/style.css" />
+<link rel="stylesheet" href="__ROOT__/markdown/css/editormd.css" />
+{/block}
+{block name="main"}
+<!-- 内容区域 -->
+<div class="col-12 grid-margin">
+    <div class="card">
+        <div class="card-body">
+            <form class="form-sample" id="addArticle" action="{:url('Article/saveArticle')}" method="post">
+                <input type="hidden" name="id" id="id" value="{$result.id}">
+                <input type="hidden" name="cover" id="cover" value="{$result.cover}">
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">文章分类</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" id="fid" name="fid">
+                                    {volist name="flList" id="vo"}
+                                      <option value="{$vo.id}" {if condition="$result.fid eq $vo.id"}selected{/if}>{$vo.name}</option>
+                                    {/volist}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">文章标题</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="title" name="title" value="{$result.title}" placeholder="请输入文章标题">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">文章封面</label>
+                            <input type="file" name="img" id="img" onchange="fileU('img')" class="file-upload-default">
+                            <div class="col-sm-5">
+                                <input type="text" class="form-control file-upload-info" accept="image/*" disabled placeholder="上传封面">
+                            </div>
+                            <div class="col-sm-4">
+                                    <span class="input-group-append">
+                                 <button class="file-upload-browse btn btn-gradient-primary" type="button">上传封面</button>
+                                </span>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">是否推荐</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" id="recommend" name="recommend">
+                                    <option value="2" {if condition="$result.recommend eq 2"}selected{/if}>不推荐</option>
+                                    <option value="1" {if condition="$result.recommend eq 1"}selected{/if}>推荐</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">文章标签类型</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="place" name="place" value="{$result.place}" placeholder="请输入文章标签类型">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">文章作者</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="author" name="author" value="{$result.author}" placeholder="请输入文章作者">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">第三方链接</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="link" name="link" value="{$result.link}" placeholder="请输入跳转链接">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">是否显示</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" id="is_del" name="is_del">
+                                    <option value="1" {if condition="$result.is_del eq 1"}selected{/if}>显示</option>
+                                    <option value="2" {if condition="$result.is_del eq 2"}selected{/if}>不显示</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group row">
+                            <div id="test-editormd"><textarea style="display:none;">{$result.details}</textarea></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <button type="button" onclick="subFrom()" class="btn btn-gradient-primary mr-2">提交表单</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+{/block}
+{block name="footer"}
+{__block__}
+<!-- Custom js for this page-->
+<script src="__ROOT__/admin_mb/js/file-upload.js"></script>
+<!--<script src="__ROOT__/markdown/examples/js/jquery.min.js"></script>-->
+<script src="__ROOT__/markdown/editormd.js"></script>
+<script>
+    function fileU(e) {
+        let reads = new FileReader();
+        let file = document.getElementById(e).files[0];
+        reads.readAsDataURL(file);
+        reads.onload = function(e) {
+            let base64Img = e.target.result;
+            //在这里提交ajax 到服务器
+            ajaxUpdateFile({'resource':base64Img,'name':'文章非教程的封面'},function (data) {
+                if(data.code == 200){
+                    $('#cover').val(data.data.id);
+                }else{
+                    alert(data.msg);
+                }
+            });
+        }
+    }
+    
+
+
+</script>
+<script type="text/javascript">
+    var testEditor;
+
+    $(function() {
+        testEditor = editormd("test-editormd", {
+            width: "100%",
+            height: 600,
+            path : '__ROOT__/markdown/examples/../lib/',
+            // 自定义主题样式
+            theme : "default",
+            previewTheme : "default",
+            editorTheme : "pastel-on-default",
+            markdown : '',
+            codeFold : true,
+            syncScrolling : true,//实时解析预览
+            saveHTMLToTextarea : true,    // 保存 HTML 到 Textarea
+            searchReplace : true,
+            //watch : false,                // 关闭实时预览
+            htmlDecode : "style,script,iframe|on*",            // 开启 HTML 标签解析，为了安全性，默认不开启
+            toolbar  : true,             //关闭工具栏
+            //previewCodeHighlight : false, // 关闭预览 HTML 的代码块高亮，默认开启
+            emoji : true,
+            taskList : true,
+            tocm            : true,         // Using [TOCM]
+            tex : true,                   // 开启科学公式TeX语言支持，默认关闭
+            flowChart : true,             // 开启流程图支持，默认关闭
+            sequenceDiagram : true,       // 开启时序/序列图支持，默认关闭,
+            //dialogLockScreen : false,   // 设置弹出层对话框不锁屏，全局通用，默认为true
+            //dialogShowMask : false,     // 设置弹出层对话框显示透明遮罩层，全局通用，默认为true
+            //dialogDraggable : false,    // 设置弹出层对话框不可拖动，全局通用，默认为true
+            //dialogMaskOpacity : 0.4,    // 设置透明遮罩层的透明度，全局通用，默认值为0.1
+            //dialogMaskBgColor : "#000", // 设置透明遮罩层的背景颜色，全局通用，默认为#fff
+            imageUpload : true,
+            imageFormats : ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
+            imageUploadURL : "__ROOT__/markdown/examples/php/upload.php",
+            onload : function() {
+                console.log('onload', this);
+                //this.fullscreen();
+                //this.unwatch();
+                //this.watch().fullscreen();
+
+                //this.setMarkdown("#PHP");
+                //this.width("100%");
+                //this.height(480);
+                //this.resize("100%", 640);
+            }
+        });
+    });
+
+    function subFrom() {
+        // $('#details').val(testEditor.getMarkdown());
+        $("#addArticle").submit()
+    }
+</script>
+{/block}

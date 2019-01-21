@@ -1,0 +1,89 @@
+{extend name="public/base" /}
+{block name="main"}
+<!-- 内容区域 -->
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <a href="{:url('Article/addArticle')}"> <button type="button" class="btn btn-gradient-success btn-fw">添加文章</button></a>
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>
+                        ID
+                    </th>
+                    <th>
+                        分类名称
+                    </th>
+                    <th>
+                        封面
+                    </th>
+                    <th>
+                        标题
+                    </th>
+                    <th>
+                        描述
+                    </th>
+                    <th>
+                        标签
+                    </th>
+                    <th>
+                        操作
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+
+                {volist name="result" id="vo"}
+                <tr id="del{$vo.id}">
+                    <td class="py-1">
+                        {$vo.id}
+                    </td>
+                    <td>
+                        {$vo.name}
+                    </td>
+                    <td>
+                        <img src="{$vo.cove_url}" alt="">
+
+                    </td>
+                    <td>
+                        {$vo.title}
+                    </td>
+                    <td>
+                        {$vo.desc}
+                    </td>
+                    <th>
+
+                        {$vo.place}
+                    </th>
+                    <th>
+                        <a href="{:url('Article/addArticle',['id'=>$vo.id])}">
+                            <button type="button" onclick="update()" class="btn btn-gradient-success btn-sm">修改</button>
+                        </a>
+                        <button type="button" onclick="remove('{$vo.id}')" class="btn btn-gradient-danger btn-sm">删除</button>
+                    </th>
+                </tr>
+                {/volist}
+
+                </tbody>
+            </table>
+            <div class="row">
+                {$page}
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+{block name="footer"}
+{__block__}
+<script>
+    function remove(e) {
+        if(confirm("您确定要删除吗?")){
+            let data = {};
+            data.id = e;
+            ajaxRemoveA(data);
+            return false;
+        }
+
+    }
+</script>
+{/block}

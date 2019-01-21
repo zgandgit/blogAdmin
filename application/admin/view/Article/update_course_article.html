@@ -1,0 +1,465 @@
+{extend name="public/base" /}
+{block name="head"}
+{__block__}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.min.css">
+<link rel="stylesheet" href="http://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+<link rel="stylesheet" href="__ROOT__/static/rclikc/basicContext.min.css">
+<link rel="stylesheet" href="__ROOT__/static/rclikc/default.min.css">
+<link rel="stylesheet" href="__ROOT__/markdown/examples/css/style.css" />
+<link rel="stylesheet" href="__ROOT__/markdown/css/editormd.css" />
+{/block}
+{block name="main"}
+<style>
+    .navs{
+        cursor:pointer;
+        text-align: left;
+        margin-bottom: 20px;
+    }
+    .navs ul{
+        display: block;
+        list-style: none;
+        padding: 0;
+    }
+    .navs ul li{
+        margin-left: 8px;
+        padding-left: 14px;
+        font-size: 16px;
+    }
+    .navs ul li>i{
+        position: relative;
+    }
+    .navs ul li a{
+        text-decoration:none ;
+        color: #202020;
+        position: relative;
+        width: 0;
+        white-space: nowrap;
+        display: -webkit-inline-box;
+        padding-left: 10px;
+    }
+    .navs>ul>li{
+        line-height: 30px;
+        cursor: pointer;
+        margin-left: 0;
+        white-space: nowrap;
+        width: 100%;
+    }
+    .navs ul li.active{
+
+    }
+    .navs ul li>.wholerow {
+
+        width: 100%;
+        position: absolute;
+        left: 0;
+        user-select: none;
+        height: 30px;
+    }
+    .navs ul li.active>.wholerow {
+        background: #f1f2f2;
+    }
+    .navs ul li.hover> .wholerow{
+        background: #f1f2f2;
+    }
+    .navs ul li>ul{
+        display: none;
+    }
+    .navs ul li.open>ul{
+        display: block;
+    }
+
+</style>
+<!-- 内容区域 -->
+
+
+<div class="row">
+    <div class="col-md-3 stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <input type="hidden" name="cid" id="cid" value="{$course.id}">
+                <input type="hidden" name="aid" id="aid" value="{$article.aid}">
+                <nav class="navs">
+                    <h3 class="card-title">{$course.title}</h3>
+                    <div  id="catalogue">
+                    <!--<ul>-->
+                        <!--<li class="open active">-->
+                            <!--<div class="wholerow"></div>-->
+                            <!--<i class="mdi mdi-arrow-down-drop-circle"></i>-->
+                            <!--<a href="javascript:void(0)" name="1">目录一</a>-->
+                            <!--<ul>-->
+                                <!--<li>-->
+                                    <!--<div class="wholerow"></div>-->
+                                    <!--<i class="mdi mdi-arrow-right-drop-circle"></i>-->
+                                    <!--<a href="javascript:void(0)" name="1-1">目录1-1</a>-->
+                                    <!--<ul>-->
+                                        <!--<li>-->
+                                            <!--<div class="wholerow"></div>-->
+                                            <!--<i class="mdi mdi-arrow-right-drop-circle"></i>-->
+                                            <!--<a href="javascript:void(0)" name="1-1-1">目录1-1-1</a>-->
+                                        <!--</li>-->
+                                        <!--<li>-->
+                                            <!--<div class="wholerow"></div>-->
+                                            <!--<i class="mdi mdi-arrow-right-drop-circle"></i>-->
+                                            <!--<a href="javascript:void(0)" name="1-1-2">目录1-1-2</a>-->
+                                        <!--</li>-->
+                                    <!--</ul>-->
+                                <!--</li>-->
+                                <!--<li>-->
+                                    <!--<div class="wholerow"></div>-->
+                                    <!--<i class="mdi mdi-arrow-right-drop-circle"></i>-->
+                                    <!--<a href="javascript:void(0)" name="1-2">目录1-2</a>-->
+                                <!--</li>-->
+                            <!--</ul>-->
+                        <!--</li>-->
+                    <!--</ul>-->
+                    </div>
+
+                </nav>
+                <button type="button" class="btn btn-primary btn-fw" onclick="dwz()">添加章节</button>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-9 stretch-card">
+        <div class="card">
+            <div class="card-body" id="test-editormd">
+                <textarea style="display:none;">{$article.details}</textarea>
+            </div>
+        </div>
+    </div>
+
+
+    <!--添加章节-->
+
+    <!-- Modal -->
+    <div class="modal fade" id="myModalZ" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <form class="forms-sample">
+                        <input type="hidden" id="sup_aid" value="">
+                        <div class="form-group">
+                            <label for="title">教程标题</label>
+                            <input type="text" class="form-control" id="c_title" placeholder="请输入教程标题">
+                        </div>
+                        <div class="form-group">
+                            <label for="desc">教程描述</label>
+                            <input type="text" class="form-control" id="c_desc" placeholder="请输入教程描述">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="jctj()">确认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!--修改章节-->
+    <!-- Modal -->
+    <div class="modal fade" id="upMyModalZ" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <form class="forms-sample">
+                        <input type="hidden" id="upaid" value="">
+                        <div class="form-group">
+                            <label for="title">教程标题</label>
+                            <input type="text" class="form-control" id="up_title" placeholder="请输入教程标题">
+                        </div>
+                        <div class="form-group">
+                            <label for="desc">教程描述</label>
+                            <input type="text" class="form-control" id="up_desc" placeholder="请输入教程描述">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="upActile()">确认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{/block}
+{block name="footer"}
+{__block__}
+<script src="__ROOT__/admin_mb/js/file-upload.js"></script>
+<script src="__ROOT__/static/rclikc/basicContext.min.js"></script>
+<script src="__ROOT__/markdown/editormd.js"></script>
+<script>
+    //菜单列表html
+    var menus = '';
+    var aid = {$article.aid};
+
+    function GetData(id, arry) {
+        var childArry = GetParentArry(id, arry);
+        if (childArry.length > 0) {
+            menus += '<ul>';
+            for (var i in childArry) {
+                if(childArry[i].id == aid){
+                    menus += '<li class="active">';
+                }else{
+                    menus += '<li>';
+                }
+                menus += '<div class="wholerow"></div>';
+                menus += '<i class="mdi mdi-arrow-right-drop-circle"></i>';
+                menus += '<a name="'+childArry[i].id+'" href="{:url('updateCourseArticle')}'+'?aid='+childArry[i].id+'&id='+$('#cid').val()+'">'+childArry[i].title+'</a>';
+                GetData(childArry[i].id, arry);
+                menus += '</li>';
+            }
+            menus += '</ul>';
+        }
+    }
+
+    function GetParentArry(id, arry) {
+        var newArry = new Array();
+        for (var i in arry) {
+            if (arry[i].sup_aid == id)
+                newArry.push(arry[i]);
+        }
+        return newArry;
+    }
+
+    $(function () {
+        //获取数据 js 递归查询
+        let result = {$result};
+        GetData(0, result);
+        $('#catalogue').html(menus);
+        //让所有的 节点是active 的上级li 都带有open
+        $('li.active').parents('li').addClass('open');
+
+        $('li.active').parents('li').children('.mdi').removeClass("mdi-arrow-right-drop-circle");
+        $('li.active').parents('li').children('.mdi').addClass("mdi-arrow-down-drop-circle");
+
+
+        //点击箭头切换
+        $('.navs ul li>i').click(function () {
+            let cls = $(this).hasClass("mdi-arrow-down-drop-circle");
+            if(cls){
+               //删除这个class 改变箭头向右 收缩子节点
+                $(this).removeClass("mdi-arrow-down-drop-circle");
+                $(this).addClass('mdi-arrow-right-drop-circle');
+                //获取同级的ul节点 并隐藏
+                $(this).parent('li').removeClass('open');
+            }else{
+                //删除这个class 改变箭头向下 放开子节点
+                $(this).removeClass("mdi-arrow-right-drop-circle");
+                $(this).addClass('mdi-arrow-down-drop-circle');
+                //获取同级的ul节点 并开放
+                $(this).parent('li').addClass('open');
+
+            }
+        });
+
+
+
+        $('.navs ul li').mouseover(function(e){
+            e.stopPropagation();
+            $('.navs ul li').removeClass('hover')
+            $(this).addClass('hover')
+
+        });
+
+        $('.navs ul li').mouseout(function(e){
+            e.stopPropagation();
+            $(this).removeClass('hover')
+        });
+
+
+
+        $('.navs ul li>a').bind("contextmenu", function (e) {
+            let id = $(this).attr('name');
+            onClick(e,id)
+            return false;
+        });
+
+        });
+
+    function onClick(e,id) {
+        var addCourse = function() {
+            $('#myModalZ').modal('toggle');
+            $('#sup_aid').val(id);
+        }
+        var bgCourse = function() {
+            $('#upMyModalZ').modal('toggle');
+            $('#upaid').val(id);
+        }
+        var delCourse = function() {
+            if(confirm("您确定要删除吗?将会删除所有此文档下面的教程")){
+                $.ajax({
+                    type:"post",
+                    url:"{:url('removeCaseArticle')}",
+                    dataType:"json",
+                    data:{id:id},
+                    success:function(result){
+                        if(result.code == 200){
+                            window.location.href="{:url('updateCourseArticle')}"+"?aid"+result.data['aid']+"&id="+$('#cid').val();
+                        }else{
+                            alert(result.msg);
+                        }
+                    }
+                });
+            }
+
+
+
+        }
+        var items = [
+            { title: '新增', icon: 'mdi mdi-book-plus', fn: addCourse },
+            { title: '编辑', icon: 'mdi mdi-lead-pencil', fn: bgCourse },
+            { title: '删除', icon: 'mdi mdi-archive', fn: delCourse },
+        ]
+        basicContext.show(items, e)
+    }
+    document.oncontextmenu = function() {
+        return false;
+    }
+
+    function dwz() {
+        $('#myModalZ').modal('toggle');
+        $('#sup_aid').val(0);
+    }
+
+    function upActile() {
+
+
+        let data = {};
+        data.title = $('#up_title').val();
+        data.desc = $('#up_desc').val();
+        data.aid = $('#upaid').val();
+
+        $('#upMyModalZ').modal('toggle');
+        // //在这里提交并保存
+        $.ajax({
+            type:"post",
+            url:"{:url('upArticle')}",
+            dataType:"json",
+            data:data,
+            success:function(result){
+                if(result.code == 200){
+                    window.location.href="{:url('updateCourseArticle')}"+"?aid"+data.aid+"&id="+$('#cid').val();
+                }else{
+                    alert(result.msg);
+                }
+            },
+            error:function(jqXHR){
+                console.log("Error: "+jqXHR.status);
+            }
+        });
+    }
+    function jctj() {
+        let data = {};
+        data.cid = $('#cid').val();
+        data.title = $('#c_title').val();
+        data.desc = $('#c_desc').val();
+        data.sup_aid = $('#sup_aid').val();
+        $('#myModalZ').modal('toggle');//隐藏起来
+        //在这里提交并保存
+        $.ajax({
+            type:"post",
+            url:"{:url('attribAjax')}",
+            dataType:"json",
+            data:data,
+            success:function(result){
+                if(result.code == 200){
+                    window.location.href="{:url('updateCourseArticle')}"+"?aid="+result.data['aid']+"&id="+result.data['id'];
+                }else{
+                    alert(result.msg);
+                }
+            },
+            error:function(jqXHR){
+                console.log("Error: "+jqXHR.status);
+            }
+        });
+
+    }
+</script>
+
+<script>
+
+
+
+    var testEditor;
+    $(function() {
+        testEditor = editormd("test-editormd", {
+            width: "100%",
+            height: 600,
+            path : '__ROOT__/markdown/examples/../lib/',
+            // 自定义主题样式
+            theme : "default",
+            previewTheme : "default",
+            editorTheme : "pastel-on-default",
+            markdown : '',
+            codeFold : true,
+            syncScrolling : true,//实时解析预览
+            saveHTMLToTextarea : true,    // 保存 HTML 到 Textarea
+            searchReplace : true,
+            //watch : false,                // 关闭实时预览
+            htmlDecode : "style,script,iframe|on*",            // 开启 HTML 标签解析，为了安全性，默认不开启
+            toolbar  : true,             //关闭工具栏
+            //previewCodeHighlight : false, // 关闭预览 HTML 的代码块高亮，默认开启
+            emoji : true,
+            taskList : true,
+            tocm            : true,         // Using [TOCM]
+            tex : true,                   // 开启科学公式TeX语言支持，默认关闭
+            flowChart : true,             // 开启流程图支持，默认关闭
+            sequenceDiagram : true,       // 开启时序/序列图支持，默认关闭,
+            //dialogLockScreen : false,   // 设置弹出层对话框不锁屏，全局通用，默认为true
+            //dialogShowMask : false,     // 设置弹出层对话框显示透明遮罩层，全局通用，默认为true
+            //dialogDraggable : false,    // 设置弹出层对话框不可拖动，全局通用，默认为true
+            //dialogMaskOpacity : 0.4,    // 设置透明遮罩层的透明度，全局通用，默认值为0.1
+            //dialogMaskBgColor : "#000", // 设置透明遮罩层的背景颜色，全局通用，默认为#fff
+            imageUpload : true,
+            imageFormats : ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
+            imageUploadURL : "__ROOT__/markdown/examples/php/upload.php",
+            onload : function() {
+                console.log('onload', this);
+                //this.fullscreen();
+                //this.unwatch();
+                //this.watch().fullscreen();
+
+                //this.setMarkdown("#PHP");
+                //this.width("100%");
+                //this.height(480);
+                //this.resize("100%", 640);
+            },
+            onchange : function() {
+                console.log(this.getValue());
+                // $("#output").html("onchange : this.id =>" + this.id + ", markdown =>" + this.getValue());
+                // console.log("onchange =>", this, this.id, this.settings, this.state);
+                let datas = {};
+                datas.aid = '{$article.aid}';
+                datas.details = this.getValue();
+                $.ajax({
+                    type:"post",
+                    url:"{:url('constantlyUpdatedEditor')}",
+                    dataType:"json",
+                    data:datas,
+                    success:function(result){
+                        if(result.code == 200){
+
+                        }else{
+                            alert(result.msg);
+                        }
+                    },
+                    error:function(jqXHR){
+                        console.log("Error: "+jqXHR.status);
+                    }
+                });
+
+
+            }
+        });
+    });
+
+
+
+
+</script>
+
+{/block}
