@@ -46,6 +46,18 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">选择状态</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" id="stick" name="stick">
+                                    <option value="2" {if condition="$result.stick eq 2"}selected{/if}>不推荐</option>
+                                    <option value="1" {if condition="$result.stick eq 1"}selected{/if}>推荐</option>
+
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
                             <label class="col-sm-3 col-form-label">是否立即发布</label>
                             <div class="col-sm-9">
                                 <select class="form-control" id="shelve" name="shelve">

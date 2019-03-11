@@ -8,6 +8,7 @@
 
 namespace app\admin\controller;
 
+use think\Log;
 use think\Request;
 
 class Article extends Base
@@ -31,8 +32,22 @@ class Article extends Base
      * @return \think\response\View
      */
     public function index(){
+        $flList = $this->classify->classifyList();
+        $this->assign('flList',$flList);
         //继续获取文章列表
-        $result = $this->article->lists();
+        $condition = Request::instance()->param();//获取查询条件
+        $arr = [];
+        if(isset($condition)){
+            if(isset($condition['title']) && $condition['title'] != ''){
+                $arr['a.title'] = ['like','%'.$condition['title'].'%'];
+            }
+            if(isset($condition['fid'])  && $condition['fid'] != ''){
+                $arr['a.fid'] = $condition['fid'];
+            }
+        }
+
+
+        $result = $this->article->lists($arr);
         $page = $result->render();
         $this->assign('page', $page);
         $this->assign('result',$result);
@@ -75,7 +90,8 @@ class Article extends Base
            'fid' => $data['fid'],
            'cover' => $data['cover'],
            'title' => $data['title'],
-           'desc' => cut_str($data['test-editormd-markdown-doc'],32),
+
+           'desc' => cut_str(cn_str($data['test-editormd-markdown-doc']),32),
            'place' => $data['place'],
            'author' => $data['author'],
            'add_time' => date('Y-m-d H:i:s'),
@@ -206,7 +222,9 @@ class Article extends Base
             'cover' => 1,
             'title' => '',
             'intro' => '',
-            'shelve' => 2
+            'shelve' => 2,
+            'stick' => 2,
+
         ];//初始化数据模型
         if(!empty($id)){
             $result = $this->course->findS('',['where'=>['id'=>$id]]);//条件
@@ -227,7 +245,8 @@ class Article extends Base
             'cover' => $data['cover'],
             'title' => $data['title'],
             'intro' => $data['intro'],
-            'shelve' => $data['shelve']
+            'shelve' => $data['shelve'],
+            'stick' => $data['stick']
         ];//初始化数据模型
 
         if(empty($data['id'])){
@@ -314,11 +333,11 @@ class Article extends Base
         $caseA = $this->courseArtice->where(['aid'=>$id])->find();
         //在这里查询 所有教程下面的文章ID
         $cList = $this->courseArtice->where(['sup_aid'=>$id])->column('aid');
-        $this->aids($cList,$cList);
+        if($cList){
+            $this->aids($cList,$cList);
+        }
         $this->article->where('id',$id)->delete();
         $this->courseArtice->where('aid',$id)->delete();
-
-
         return ajReturn(['aid'=>$caseA['sup_aid']], '删除成功');
 
 
@@ -326,8 +345,11 @@ class Article extends Base
 
     public function aids($cList,$datas){
 
+
        $data = $this->courseArtice->where('sup_aid','in',$datas)->column('aid');
+
        if(count($data)>0){
+
            foreach ($data as $k=>$v){
                array_push($cList,$v);
            }

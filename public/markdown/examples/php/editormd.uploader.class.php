@@ -332,12 +332,13 @@
             {
                 if ($success == 1)
                 {
-                    $array['url']    = $url;
+                    $array['url']    = '//'.$_SERVER['SERVER_NAME'].$url;
                 }
                 else
                 {
                     $array['message'] = $message; 
                 }
+
                 
                 echo json_encode($array);
             }

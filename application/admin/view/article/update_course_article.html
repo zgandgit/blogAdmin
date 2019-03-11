@@ -291,6 +291,7 @@
         }
         var delCourse = function() {
             if(confirm("您确定要删除吗?将会删除所有此文档下面的教程")){
+                // alert(id);
                 $.ajax({
                     type:"post",
                     url:"{:url('removeCaseArticle')}",
